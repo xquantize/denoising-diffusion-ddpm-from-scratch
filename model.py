@@ -27,8 +27,15 @@ import torch.nn.functional as F
 def cumprod_alphas(alphas):
     return torch.cumprod(alphas, dim=0)
 
-# Step 4 - extract_into_batch (not yet solved)
-# TODO: implement
+# Step 4 - extract_into_batch
+import torch
+import torch.nn.functional as F
+
+def extract_into_batch(a, t, x):
+    batch_size = t.shape[0]
+    out = a.to(t.device).gather(0, t)
+
+    return out.reshape(batch_size, *([1] * (x.dim() -1 )))
 
 # Step 5 - q_sample (not yet solved)
 # TODO: implement
