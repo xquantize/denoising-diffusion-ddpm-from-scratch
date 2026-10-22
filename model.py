@@ -139,8 +139,24 @@ def tiny_unet_forward(x, t, params: dict):
 
     return F.conv2d(h, params['conv_out_w'], params['conv_out_b'], padding=1)
 
-# Step 12 - make_blob_dataset (not yet solved)
-# TODO: implement
+# Step 12 - make_blob_dataset
+import torch
+import torch.nn.functional as F
+
+def make_blob_dataset(n: int = 128, size: int = 8, seed: int = 0):
+    g = torch.Generator().manual_seed(seed)
+    radius = size * (0.15 + 0.2 * torch.rand(n, generator=g))
+    margin = radius.clamp(max=size / 2 - 0.5)
+    
+    cx = margin + torch.rand(n, generator=g) * (size - 1 - 2 * margin)
+    cy = margin + torch.rand(n, generator=g) * (size - 1 - 2 * margin)
+
+    coords = torch.arange(size, dtype=torch.float32)
+    yy, xx = torch.meshgrid(coords, coords, indexing='ij')
+    dist2 = (xx[None] - cx[:, None, None]) ** 2 + (yy[None] - cy[:, None, None]) ** 2
+    disk = (dist2 <= radius[:, None, None] ** 2).float()
+
+    return disk.unsqueeze(1)
 
 # Step 13 - ddpm_train_step (not yet solved)
 # TODO: implement
