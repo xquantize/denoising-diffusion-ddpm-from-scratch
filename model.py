@@ -200,8 +200,15 @@ def train_ddpm(dataset, params: dict, schedule: dict, num_steps: int = 50, batch
 
     return params, losses
 
-# Step 15 - predict_x0_from_eps (not yet solved)
-# TODO: implement
+# Step 15 - predict_x0_from_eps
+import torch
+import torch.nn.functional as F
+
+def predict_x0_from_eps(x_t, t, eps, alphas_cumprod):
+    sqrt_alpha_bar = extract_into_batch(alphas_cumprod.sqrt(), t, x_t)
+    sqrt_one_minus_alpha_bar = extract_into_batch((1 - alphas_cumprod).sqrt(), t, x_t)
+
+    return (x_t - sqrt_one_minus_alpha_bar * eps) / sqrt_alpha_bar
 
 # Step 16 - ddpm_p_mean_variance (not yet solved)
 # TODO: implement
