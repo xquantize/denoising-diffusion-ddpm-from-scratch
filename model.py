@@ -266,8 +266,16 @@ def ddpm_sample_loop(params: dict, schedule: dict, shape: tuple, seed: int = 0):
 
     return x
 
-# Step 19 - sample_quality_mse (not yet solved)
-# TODO: implement
+# Step 19 - sample_quality_mse
+import torch
+import torch.nn.functional as F
+def sample_quality_mse(samples, dataset) -> float:
+    s = samples.reshape(samples.shape[0], -1).float()
+    d = dataset.reshape(dataset.shape[0], -1).float().to(s.device)
+
+    mse = ((s[:, None, :] - d[None, :, :]) ** 2).mean(dim=-1)
+    
+    return float(mse.min(dim=1).values.mean().item())
 
 # Step 20 - ddpm_experiment (not yet solved)
 # TODO: implement
